@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("ct")
 internal class GandiClientTest {
 
     @Autowired
@@ -19,14 +19,13 @@ internal class GandiClientTest {
 
     @Test
     fun testDnsUpdater() {
-
         val wireMockServer = WireMockServer()
         wireMockServer.start()
         WireMockConfiguration.options().notifier(ConsoleNotifier(true))
         configureFor("localhost", 8080)
         stubFor(put(urlEqualTo("/api/v5/domains/foo.net/records/bar/A"))
-            .willReturn(okJson("{keks}")))
-
+            .willReturn(okJson("{\"keks\":\"dose\"}")))
+        
         val ipAddress= "1.1.1.1"
         val responseCode = gandiClient.doUpdateIpWithfqdn(ipAddress, "bar")
         assertThat(responseCode.statusCode.value()).isEqualTo(200)

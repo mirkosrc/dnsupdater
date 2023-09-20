@@ -47,6 +47,7 @@ testing {
             dependencies {
                 implementation(project())
                 implementation("org.springframework.boot:spring-boot-starter-test")
+                implementation("org.springframework.boot:spring-boot-starter-web")
                 implementation("com.github.tomakehurst:wiremock-standalone:3.0.1")
             }
 
