@@ -23,11 +23,11 @@ internal class GandiClientTest {
         wireMockServer.start()
         WireMockConfiguration.options().notifier(ConsoleNotifier(true))
         configureFor("localhost", 8080)
-        stubFor(put(urlEqualTo("/api/v5/domains/foo.net/records/bar/A"))
+        stubFor(put(urlEqualTo("/api/v5/domains/foo.net/records/fqdn/A"))
             .willReturn(okJson("{\"keks\":\"dose\"}")))
         
         val ipAddress= "1.1.1.1"
-        val responseCode = gandiClient.doUpdateIpWithfqdn(ipAddress, "bar")
+        val responseCode = gandiClient.doUpdateIpWithfqdn(ipAddress, "fqdn")
         assertThat(responseCode.statusCode.value()).isEqualTo(200)
         wireMockServer.stop()
     }
