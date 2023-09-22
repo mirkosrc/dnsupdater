@@ -14,7 +14,7 @@ class UpdateDnsSchedulingService @Autowired constructor(
 
     private var savedIp = "noIpKnownYet"
 
-    @Scheduled(cron = "*/3 * * * * *")
+    @Scheduled(cron = "\${dns.update.cron}" )
     fun updateDns() {
         val externalIp: String = externalIpRetrieverService.getExternalIp()
         LOGGER.info("running scheduler. get external ip: $externalIp")
