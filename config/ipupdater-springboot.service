@@ -1,0 +1,10 @@
+[Unit]
+Description=A Spring Boot application
+After=syslog.target
+
+[Service]
+User=javauser
+ExecStart=/home/someone/ipSpring.sh SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

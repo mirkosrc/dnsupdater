@@ -5,10 +5,30 @@
 
 *This application retrieves the external IP address of your router, which is updated frequently by the internet service provider and tells it to your DNS provider.*
 
+# Instuctions
+1. Install https://github.com/transmission/miniupnpc on your server. 
+2. Build with `./gradlew bootJar`.
+3. Deploy and run on your server: `java -jar dnsupdater.jar`. 
+You may want to run it as a systemd service at system startup time with a different user and limited rights.
 
-Install https://github.com/transmission/miniupnpc on your server. The Spring Boot application calls `external-ip`, which returns
+Create `/etc/systemd/system/ipupdater-springboot.service` with
+```
+[Unit]
+Description=A Spring Boot application.
+After=syslog.target
+
+[Service]
+User=javauser
+ExecStart=/home/someone/ipSpring.sh SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
+```
+
+The Spring Boot application calls `external-ip`, which returns
 the external IP address of your Fritz!Box Router.
 
+### Optional:
 Using an external configuration file:
 
 `java -jar dnsupdater.jar --spring.config.additional-location=my.properties`
