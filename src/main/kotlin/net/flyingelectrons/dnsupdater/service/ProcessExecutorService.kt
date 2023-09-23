@@ -1,5 +1,6 @@
 package net.flyingelectrons.dnsupdater.service
 
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.io.InputStream
@@ -11,6 +12,7 @@ import java.util.function.Consumer
 class ProcessExecutorService {
 
     fun execute(unixCommand: String): String {
+        LOGGER.info("execute unixCommand $unixCommand")
         var out = ""
         val process: Process = Runtime.getRuntime()
             .exec(unixCommand)
@@ -24,6 +26,10 @@ class ProcessExecutorService {
         val exitCode = process.waitFor()
         assert(exitCode == 0)
         return out
+    }
+
+    companion object {
+        private val LOGGER = KotlinLogging.logger { }
     }
 }
 

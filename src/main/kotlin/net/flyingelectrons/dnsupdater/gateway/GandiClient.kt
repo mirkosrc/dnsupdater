@@ -2,7 +2,8 @@ package net.flyingelectrons.dnsupdater.gateway
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -13,9 +14,8 @@ import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestTemplate
 
 @Service
-class GandiClient {
+class GandiClient @Autowired constructor(var restTemplate: RestTemplate) {
 
-    private val restTemplate = RestTemplate()
 
     @Value(value = "\${dns.service.api-key}")
     private lateinit var apiKey: String
@@ -45,7 +45,7 @@ class GandiClient {
     }
 
     companion object {
-        private val LOGGER = LoggerFactory.getLogger(GandiClient::class.java)
+        private val LOGGER = KotlinLogging.logger { }
     }
 
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
