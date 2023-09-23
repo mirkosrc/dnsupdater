@@ -16,13 +16,20 @@ class UpdateDnsSchedulingService @Autowired constructor(
 
     @Scheduled(cron = "\${dns.update.cron}" )
     fun updateDns() {
-        val externalIp: String = externalIpRetrieverService.getExternalIp()
-        LOGGER.info("running scheduler. get external ip: $externalIp")
-        if (externalIp != savedIp) {
-            val ipWithfqdn = gandiClient.doUpdateIpWithfqdn(externalIp, "myfqdn")
-            LOGGER.info("Updating myfqdn")
-            LOGGER.info(ipWithfqdn.body)
-            savedIp = externalIp
+        try {
+            LOGGER.info("running scheduler")
+            val externalIp: String = externalIpRetrieverService.getExternalIp()
+            LOGGER.info("get external ip: $externalIp")
+
+            if (externalIp != savedIp) {
+                val ipWithfqdn = gandiClient.doUpdateIpWithfqdn(externalIp, "myfqdn")
+                LOGGER.info("Updating {}", ipWithfqdn.body)
+                savedIp = externalIp
+            } else {
+                LOGGER.info("IP did not change")
+            }
+        } catch (ex: IllegalArgumentException) {
+            LOGGER.info("running scheduler failed with {}", ex.message)
         }
     }
 
