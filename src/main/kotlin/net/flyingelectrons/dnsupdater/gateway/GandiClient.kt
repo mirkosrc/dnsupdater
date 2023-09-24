@@ -25,8 +25,8 @@ class GandiClient @Autowired constructor(var restTemplate: RestTemplate) {
 
     fun doUpdateIpWithfqdn(ipAddress: String, fqdn: String): ResponseEntity<String> {
         val httpHeaders = HttpHeaders()
-        val requestEntity = HttpEntity(
-            MyRequestBody("300", listOf(ipAddress)), HttpHeaders().apply { httpHeaders["Authorization"] = "Apikey $apiKey" })
+        httpHeaders.set("Authorization", "Apikey $apiKey")
+        val requestEntity = HttpEntity(MyRequestBody("300", listOf(ipAddress)), httpHeaders)
         return try {
             val responseEntity = restTemplate.exchange(
                 "$dnsApiUrl$fqdn/A",
