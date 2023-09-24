@@ -5,7 +5,7 @@
 
 *This application retrieves the external IP address of your router, which is updated frequently by the internet service provider and tells it to your DNS provider.*
 
-# Instuctions
+# Instructions
 1. Build jar with `./gradlew bootJar`.
 2. Deploy and run on your server: `java -jar dnsupdater.jar`. 
 
