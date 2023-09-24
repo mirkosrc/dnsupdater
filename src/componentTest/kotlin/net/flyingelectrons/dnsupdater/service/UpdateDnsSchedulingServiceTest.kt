@@ -1,19 +1,16 @@
 package net.flyingelectrons.dnsupdater.service
 
+import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
-import io.mockk.mockk
 import io.mockk.verify
 import net.flyingelectrons.dnsupdater.gateway.GandiClient
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.client.MockRestServiceServer
-import org.springframework.web.client.RestTemplate
 
 @SpringBootTest
 @ActiveProfiles("ct")
@@ -22,22 +19,20 @@ class UpdateDnsSchedulingServiceTest {
     @Autowired
     private lateinit var updateDnsSchedulingService: UpdateDnsSchedulingService
 
-    private var externalIpRetrieverService = mockk<ExternalIpRetrieverService>(relaxed = true)
+    @MockkBean
+    private lateinit var externalIpRetrieverService: ExternalIpRetrieverService
 
-    private var gandiClient = mockk<GandiClient>()
+    @MockkBean
+    private lateinit var gandiClient: GandiClient
 
-    @BeforeEach
-    fun init() {
-        updateDnsSchedulingService = UpdateDnsSchedulingService(externalIpRetrieverService, gandiClient, listOf("foo"))
-    }
-    
+
     @Test
-    fun `New external IP should be saved if update call to dns provider was successful` () {
+    fun `New external IP should be saved if update call to dns provider was successful`() {
         every { externalIpRetrieverService.getExternalIp() } returns "1.1.1.1"
         every { gandiClient.doUpdateIpWithfqdn(any(), any()) } returns ResponseEntity<String>(HttpStatus.CREATED)
         updateDnsSchedulingService.updateDns()
 
-        assertThat(updateDnsSchedulingService.ipMemoryList[0]).isEqualTo(IpMemory("foo", "1.1.1.1"))
+        assertThat(updateDnsSchedulingService.ipMemoryList[0]).isEqualTo(IpMemory("foo1", "1.1.1.1"))
     }
 
     @Test
@@ -46,7 +41,7 @@ class UpdateDnsSchedulingServiceTest {
         every { gandiClient.doUpdateIpWithfqdn(any(), any()) } returns ResponseEntity<String>(HttpStatus.FORBIDDEN)
         updateDnsSchedulingService.updateDns()
 
-        assertThat(updateDnsSchedulingService.ipMemoryList[0]).isEqualTo(IpMemory("foo", "noIpYet"))
+        assertThat(updateDnsSchedulingService.ipMemoryList[0]).isEqualTo(IpMemory("foo1", "noIpYet"))
     }
 
     @Test
@@ -54,9 +49,8 @@ class UpdateDnsSchedulingServiceTest {
         every { externalIpRetrieverService.getExternalIp() } throws IllegalArgumentException()
         updateDnsSchedulingService.updateDns()
 
-        assertThat(updateDnsSchedulingService.ipMemoryList[0]).isEqualTo(IpMemory("foo", "noIpYet"))
+        assertThat(updateDnsSchedulingService.ipMemoryList[0]).isEqualTo(IpMemory("foo1", "noIpYet"))
 
-        verify (exactly = 0){ gandiClient.doUpdateIpWithfqdn(any(), any()) } 
-        
+        verify(exactly = 0) { gandiClient.doUpdateIpWithfqdn(any(), any()) }
     }
 }

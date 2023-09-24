@@ -52,6 +52,7 @@ testing {
                 implementation("org.springframework.boot:spring-boot-starter-test")
                 implementation("org.springframework.boot:spring-boot-starter-web")
                 implementation("io.mockk:mockk:1.13.8")
+                implementation("com.ninja-squad:springmockk:4.0.2")
             }
 
             targets {
