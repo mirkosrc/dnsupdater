@@ -35,21 +35,21 @@ internal class GandiClientTest {
     }
 
     @Test
-    fun testDnsUpdater() {
+    fun `gandi client should return 201 response code from server in case of successful ip update`() {
         mockRestServiceServer.expect(ExpectedCount.once(),
             requestTo( URI("http://localhost:8080/api/v5/domains/foo.net/records/fqdn/A")))
             .andExpect(method(HttpMethod.PUT))
-            .andRespond(withStatus(HttpStatus.OK)
+            .andRespond(withStatus(HttpStatus.CREATED)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body("{\"keks\":\"dose\"}")
             );
         val ipAddress= "1.1.1.1"
         val responseCode = gandiClient.doUpdateIpWithfqdn(ipAddress, "fqdn")
-        assertThat(responseCode.statusCode.value()).isEqualTo(200)
+        assertThat(responseCode.statusCode.value()).isEqualTo(201)
     }
 
     @Test
-    fun testDnsUpdater2() {
+    fun `gandi client should return 403 in case of FORBIDDEN response`() {
         mockRestServiceServer.expect(ExpectedCount.once(),
             requestTo( URI("http://localhost:8080/api/v5/domains/foo.net/records/fqdn/A")))
             .andExpect(method(HttpMethod.PUT))
