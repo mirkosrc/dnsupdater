@@ -1,9 +1,12 @@
-# dnsupdater
+# dnsupdater for Gandi LiveDNS API
 
 [![Java CI with Gradle](https://github.com/mirkosrc/dnsupdater/actions/workflows/gradle-ci-build.yml/badge.svg)](https://github.com/mirkosrc/dnsupdater/actions/workflows/gradle-ci-build.yml)
 
 
-*This application retrieves the external IP address of your router, which is updated frequently by the internet service provider and tells it to your DNS provider.*
+*This Spring Boot application calls the Fritz!Box API via SOAP, which returns
+the external IP address of your Fritz!Box Router and updates the DNS record using the Gandi LiveDNS API
+https://api.gandi.net/docs/livedns/*
+
 
 # Instructions
 1. Build jar with `./gradlew bootJar`.
@@ -25,8 +28,7 @@ ExecStart=/home/someone/ipSpring.sh SuccessExitStatus=143
 WantedBy=multi-user.target
 ```
 
-The Spring Boot application calls the Fritz!Box API via SOAP, which returns
-the external IP address of your Fritz!Box Router.
+ 
 
 ### Optional:
 Using an external configuration file:
