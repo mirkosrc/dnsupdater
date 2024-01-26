@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestTemplate
 
+private val LOGGER = KotlinLogging.logger { }
+
 @Service
 class GandiClient @Autowired constructor(var restTemplate: RestTemplate) {
 
@@ -42,10 +44,6 @@ class GandiClient @Autowired constructor(var restTemplate: RestTemplate) {
             LOGGER.error(httpStatusCodeException.message)
             ResponseEntity<String>(httpStatusCodeException.statusCode)
         }
-    }
-
-    companion object {
-        private val LOGGER = KotlinLogging.logger { }
     }
 
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)

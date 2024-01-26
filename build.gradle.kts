@@ -1,11 +1,15 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+val mockKVersion = "1.13.8"
+val kotlinLoggingVersion = "3.0.5"
+val springmockkVersion = "4.0.2"
+
 plugins {
-    id("org.springframework.boot") version "3.1.4"
-    id("io.spring.dependency-management") version "1.1.3"
-    id("com.github.ben-manes.versions") version "0.48.0"
-    kotlin("jvm") version "1.8.22"
-    kotlin("plugin.spring") version "1.9.10"
+    id("org.springframework.boot") version "3.2.1"
+    id("io.spring.dependency-management") version "1.1.4"
+    id("com.github.ben-manes.versions") version "0.50.0"
+    kotlin("jvm") version "1.9.20"
+    kotlin("plugin.spring") version "1.9.20"
     `jvm-test-suite`
 }
 
@@ -24,7 +28,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("io.github.microutils:kotlin-logging:3.0.5")
+    implementation("io.github.microutils:kotlin-logging:$kotlinLoggingVersion")
     
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
@@ -51,8 +55,8 @@ testing {
                 implementation(project())
                 implementation("org.springframework.boot:spring-boot-starter-test")
                 implementation("org.springframework.boot:spring-boot-starter-web")
-                implementation("io.mockk:mockk:1.13.8")
-                implementation("com.ninja-squad:springmockk:4.0.2")
+                implementation("io.mockk:mockk:$mockKVersion")
+                implementation("com.ninja-squad:springmockk:$springmockkVersion")
             }
 
             targets {
