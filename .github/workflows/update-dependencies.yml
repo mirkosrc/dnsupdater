@@ -22,19 +22,22 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           
+      - name: Set Git Config
+        run: |
+          git config --global user.email "${{ secrets.USER_EMAIL }}"
+          git config --global user.name "${{ secrets.USER_NAME }}"
+
+      - name: Update project code
+        run: |
+          git pull --rebase
+          
       - name: Update Dependencies with gradle
         uses: gradle/actions/setup-gradle@v3
       - run: ./gradlew versionCatalogUpdate 
         id: depup-id
         
-      - name: Set Git Config
-        run: |
-            git config --global user.email "${{ secrets.USER_EMAIL }}"
-            git config --global user.name "${{ secrets.USER_NAME }}"
-        
       - name: Push if done successful
         run: |
-          git pull --rebase
           git add .
           git commit -m "updated deps"
           git push origin withUpdatedDependencies
