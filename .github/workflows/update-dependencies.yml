@@ -27,11 +27,6 @@ jobs:
           git config --global user.email "${{ secrets.USER_EMAIL }}"
           git config --global user.name "${{ secrets.USER_NAME }}"
 
-      - name: Update project code
-        run: |
-          git branch  --set-upstream-to origin/withUpdatedDependencies
-          git pull --rebase
-          
       - name: Update Dependencies with gradle
         uses: gradle/actions/setup-gradle@v3
       - run: ./gradlew versionCatalogUpdate 
