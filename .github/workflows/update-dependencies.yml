@@ -34,5 +34,7 @@ jobs:
         
       - name: Push if done successful
         run: |
+          git pull --rebase
+          git add .
           git commit -m "updated deps"
           git push origin withUpdatedDependencies
