@@ -1,10 +1,6 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val mockKVersion = "1.13.8"
-val kotlinLoggingVersion = "3.0.5"
-val springmockkVersion = "4.0.2"
-
 plugins {
     alias(libs.plugins.springframework.boot)
     alias(libs.plugins.spring.dependency.management)
