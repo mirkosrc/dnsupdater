@@ -29,7 +29,7 @@ jobs:
 
       - name: Update project code
         run: |
-          git branch  --set-upstream-to origin withUpdatedDependencies
+          git branch  --set-upstream-to origin/withUpdatedDependencies
           git pull --rebase
           
       - name: Update Dependencies with gradle
