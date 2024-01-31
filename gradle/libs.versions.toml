@@ -1,0 +1,29 @@
+[versions]
+org-jetbrains-kotlin = "1.9.20"
+org-springframework-boot = "3.2.2"
+
+[libraries]
+com-ninja-squad-springmockk = "com.ninja-squad:springmockk:4.0.2"
+io-mockk = "io.mockk:mockk:1.13.9"
+kotlin-build-tools-impl = { module = "org.jetbrains.kotlin:kotlin-build-tools-impl", version.ref = "org-jetbrains-kotlin" }
+kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "org-jetbrains-kotlin" }
+kotlin-klib-commonizer-embeddable = { module = "org.jetbrains.kotlin:kotlin-klib-commonizer-embeddable", version.ref = "org-jetbrains-kotlin" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "org-jetbrains-kotlin" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "org-jetbrains-kotlin" }
+microutils-kotlin-logging = "io.github.microutils:kotlin-logging:3.0.5"
+org-apache-logging-log4j-log4j-core = "org.apache.logging.log4j:log4j-core:2.17.1"
+org-jetbrains-annotations = "org.jetbrains:annotations:13.0"
+org-junit-jupiter-junit-jupiter = "org.junit.jupiter:junit-jupiter:5.10.1"
+org-junit-platform-junit-platform-launcher = "org.junit.platform:junit-platform-launcher:1.10.1"
+spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter", version.ref = "org-springframework-boot" }
+#testing
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "org-springframework-boot" }
+spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "org-springframework-boot" }
+
+[plugins]
+ben-manes-versions = "com.github.ben-manes.versions:0.51.0"
+kotlin-jvm = "org.jetbrains.kotlin.jvm:1.9.20"
+kotlin-spring = "org.jetbrains.kotlin.plugin.spring:1.9.20"
+littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.4"
+spring-dependency-management = "io.spring.dependency-management:1.1.4"
+springframework-boot = "org.springframework.boot:3.2.2"
