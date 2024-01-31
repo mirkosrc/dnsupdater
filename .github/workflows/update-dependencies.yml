@@ -15,14 +15,20 @@ jobs:
       - name: Create new branch
         run: |
           git checkout -b withUpdatedDependencies
-          git push origin withUpdatedDependencies
       
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
-        with:
-          arguments: versionCatalogUpdate
+          
+      - name: Update Dependencies with gradle
+        uses: gradle/actions/setup-gradle@v3
+      - run: ./gradlew versionCatalogUpdate 
+        id: depup-id
+        
+      - name: Push if done successful
+        if: steps.depup-id == 'success'
+        run: |
+          git commit -m "updated deps"
+          git push origin withUpdatedDependencies
