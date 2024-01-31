@@ -28,7 +28,9 @@ jobs:
         id: depup-id
         
       - name: Push if done successful
+        run: echo "### step output ###"
         if: steps.depup-id == 'success'
-        run: |
+      - run: echo  "${{ toJSON(steps.depup-id) }}"
+      - run: |
           git commit -m "updated deps"
           git push origin withUpdatedDependencies
