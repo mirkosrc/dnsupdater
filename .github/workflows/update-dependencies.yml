@@ -36,4 +36,4 @@ jobs:
         run: |
           git add .
           git commit -m "updated deps"
-          git push -u
+          git push --set-upstream origin withUpdatedDependencies
