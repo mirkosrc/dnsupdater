@@ -29,19 +29,21 @@ class UpdateDnsSchedulingServiceTest {
     @Test
     fun `New external IP should be saved if update call to dns provider was successful`() {
         every { externalIpRetrieverService.getExternalIp() } returns "1.1.1.1"
-        every { gandiClient.doUpdateIpWithfqdn(any(), any()) } returns ResponseEntity<String>(HttpStatus.CREATED)
+        every { gandiClient.doUpdateIpWithSubdomain(any(), any()) } returns ResponseEntity<String>(HttpStatus.CREATED)
+        every { gandiClient.doUpdateIpWithSubdomain2(any(), any()) } returns ResponseEntity<String>(HttpStatus.CREATED)
         updateDnsSchedulingService.updateDns()
 
-        assertThat(updateDnsSchedulingService.ipMemoryList[0]).isEqualTo(IpMemory("foo1", "1.1.1.1"))
+        assertThat(updateDnsSchedulingService.ipMemoryList[0]).isEqualTo(IpMemory("subdomain1", "1.1.1.1"))
     }
 
     @Test
     fun `New external IP should not be saved if update call to dns provider fails`() {
         every { externalIpRetrieverService.getExternalIp() } returns "1.1.1.1"
-        every { gandiClient.doUpdateIpWithfqdn(any(), any()) } returns ResponseEntity<String>(HttpStatus.FORBIDDEN)
+        every { gandiClient.doUpdateIpWithSubdomain(any(), any()) } returns ResponseEntity<String>(HttpStatus.FORBIDDEN)
+        every { gandiClient.doUpdateIpWithSubdomain2(any(), any()) } returns ResponseEntity<String>(HttpStatus.FORBIDDEN)
         updateDnsSchedulingService.updateDns()
 
-        assertThat(updateDnsSchedulingService.ipMemoryList[0]).isEqualTo(IpMemory("foo1", "noIpYet"))
+        assertThat(updateDnsSchedulingService.ipMemoryList[0]).isEqualTo(IpMemory("subdomain1", "noIpYet"))
     }
 
     @Test
@@ -49,8 +51,8 @@ class UpdateDnsSchedulingServiceTest {
         every { externalIpRetrieverService.getExternalIp() } throws IllegalArgumentException()
         updateDnsSchedulingService.updateDns()
 
-        assertThat(updateDnsSchedulingService.ipMemoryList[0]).isEqualTo(IpMemory("foo1", "noIpYet"))
+        assertThat(updateDnsSchedulingService.ipMemoryList[0]).isEqualTo(IpMemory("subdomain1", "noIpYet"))
 
-        verify(exactly = 0) { gandiClient.doUpdateIpWithfqdn(any(), any()) }
+        verify(exactly = 0) { gandiClient.doUpdateIpWithSubdomain(any(), any()) }
     }
 }

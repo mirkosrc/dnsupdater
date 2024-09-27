@@ -24,14 +24,38 @@ class GandiClient @Autowired constructor(var restTemplate: RestTemplate) {
 
     @Value(value = "\${dns.service.api-url}")
     private lateinit var dnsApiUrl: String
+    
+    @Value(value = "\${dns.service.api-url2}")
+    private lateinit var dnsApiUrl2: String
 
-    fun doUpdateIpWithfqdn(ipAddress: String, fqdn: String): ResponseEntity<String> {
+    fun doUpdateIpWithSubdomain(ipAddress: String, subdomain: String): ResponseEntity<String> {
         val httpHeaders = HttpHeaders()
-        httpHeaders.set("Authorization", "Apikey $apiKey")
+        httpHeaders["Authorization"] = "Bearer $apiKey"
         val requestEntity = HttpEntity(MyRequestBody("300", listOf(ipAddress)), httpHeaders)
         return try {
             val responseEntity = restTemplate.exchange(
-                "$dnsApiUrl$fqdn/A",
+                "$dnsApiUrl$subdomain/A",
+                HttpMethod.PUT,
+                requestEntity,
+                String::class.java
+            )
+            LOGGER.info(responseEntity.body.toString())
+            LOGGER.info(responseEntity.headers.toString())
+            responseEntity
+        } catch (httpStatusCodeException: HttpStatusCodeException) {
+            LOGGER.warn(httpStatusCodeException.toString())
+            LOGGER.error(httpStatusCodeException.message)
+            ResponseEntity<String>(httpStatusCodeException.statusCode)
+        }
+    }
+
+    fun doUpdateIpWithSubdomain2(ipAddress: String, subdomain: String): ResponseEntity<String> {
+        val httpHeaders = HttpHeaders()
+        httpHeaders["Authorization"] = "Bearer $apiKey"
+        val requestEntity = HttpEntity(MyRequestBody("300", listOf(ipAddress)), httpHeaders)
+        return try {
+            val responseEntity = restTemplate.exchange(
+                "$dnsApiUrl2$subdomain/A",
                 HttpMethod.PUT,
                 requestEntity,
                 String::class.java

@@ -13,11 +13,15 @@ import org.springframework.stereotype.Service
 class UpdateDnsSchedulingService @Autowired constructor(
     private val externalIpRetrieverService: ExternalIpRetrieverService,
     private val gandiClient: GandiClient,
-    @Value(value = "\${fqdn.names}")
-    private var fqdns: List<String>
+    @Value(value = "\${subdomain.names}")
+    private var subdomains: List<String>,
+    @Value(value = "\${subdomain.names2}")
+    private var subdomains2: List<String>
 ) {
 
-    var ipMemoryList: List<IpMemory> = fqdns.map(::IpMemory)
+    var ipMemoryList: List<IpMemory> = subdomains.map(::IpMemory)
+    var ipMemoryList2: List<IpMemory> = subdomains2.map(::IpMemory)
+    
 
     @Scheduled(cron = "\${dns.update.cron}" )
     fun updateDns() {
@@ -28,12 +32,24 @@ class UpdateDnsSchedulingService @Autowired constructor(
 
             for (ipMemory in ipMemoryList) {
                 if (externalIp != ipMemory.ip) {
-                    val ipWithfqdn: ResponseEntity<String> = gandiClient.doUpdateIpWithfqdn(externalIp, ipMemory.fqdn)
-                    LOGGER.info("Updating ${ipMemory.fqdn}")
+                    val ipWithfqdn: ResponseEntity<String> = gandiClient.doUpdateIpWithSubdomain(externalIp, ipMemory.subdomain)
+                    LOGGER.info("Updating ${ipMemory.subdomain}")
                     if (ipWithfqdn.statusCode == HttpStatus.CREATED) {
                         ipMemory.ip = externalIp
                     } else {
-                        LOGGER.info("IP of fqdn ${ipMemory.fqdn} did not change")
+                        LOGGER.info("IP of fqdn ${ipMemory.subdomain} did not change")
+                    }
+                }
+            }
+
+            for (ipMemory in ipMemoryList2) {
+                if (externalIp != ipMemory.ip) {
+                    val ipWithfqdn: ResponseEntity<String> = gandiClient.doUpdateIpWithSubdomain2(externalIp, ipMemory.subdomain)
+                    LOGGER.info("Updating2 ${ipMemory.subdomain}")
+                    if (ipWithfqdn.statusCode == HttpStatus.CREATED) {
+                        ipMemory.ip = externalIp
+                    } else {
+                        LOGGER.info("IP of fqdn2 ${ipMemory.subdomain} did not change")
                     }
                 }
             }
@@ -47,4 +63,4 @@ class UpdateDnsSchedulingService @Autowired constructor(
     }
 }
 
-data class IpMemory(var fqdn: String, var ip:String = "noIpYet")
+data class IpMemory(var subdomain: String, var ip:String = "noIpYet")
