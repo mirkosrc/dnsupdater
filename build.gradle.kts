@@ -1,4 +1,5 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -33,9 +34,10 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs += "-Xjsr305=strict"
-        jvmTarget = "17"
+    compilerOptions {
+        freeCompilerArgs.add( "-Xjsr305=strict")
+        jvmTarget.set(JvmTarget.JVM_17)
+        
     }
 }
 
@@ -56,8 +58,6 @@ testing {
                 implementation(libs.spring.boot.starter.web)
                 implementation(libs.io.mockk)
                 implementation(libs.com.ninja.squad.springmockk)
-                annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-
             }
 
             targets {
@@ -79,3 +79,8 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
     }
 }
 
+fun DependencyResolveDetails.overwriteTransitiveDependencyToVersion(group: String, name: String, version: String) {
+    if (requested.group == group && requested.name == name) {
+        useVersion(version)
+    }
+}
