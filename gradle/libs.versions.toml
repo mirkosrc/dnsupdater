@@ -3,7 +3,7 @@ org-springframework-boot = "3.4.0"
 
 [libraries]
 com-ninja-squad-springmockk = "com.ninja-squad:springmockk:4.0.2"
-io-mockk = "io.mockk:mockk:1.13.12"
+io-mockk = "io.mockk:mockk:1.13.13"
 microutils-kotlin-logging = "io.github.microutils:kotlin-logging:3.0.5"
 spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter", version.ref = "org-springframework-boot" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "org-springframework-boot" }
@@ -11,8 +11,8 @@ spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-start
 
 [plugins]
 ben-manes-versions = "com.github.ben-manes.versions:0.51.0"
-kotlin-jvm = "org.jetbrains.kotlin.jvm:2.0.20"
-kotlin-spring = "org.jetbrains.kotlin.plugin.spring:2.0.20"
-littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.4"
+kotlin-jvm = "org.jetbrains.kotlin.jvm:2.0.21"
+kotlin-spring = "org.jetbrains.kotlin.plugin.spring:2.0.21"
+littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.5"
 spring-dependency-management = "io.spring.dependency-management:1.1.6"
-springframework-boot = "org.springframework.boot:3.3.4"
+springframework-boot = "org.springframework.boot:3.4.0"
