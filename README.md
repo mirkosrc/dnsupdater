@@ -35,8 +35,3 @@ Using an external configuration file:
 
 `java -jar dnsupdater.jar --spring.config.additional-location=my.properties`
 
-### TODO:
-- update dns concurrently
-- write round trip ct
-- fix uply logic in gandi client
-- add Gauge / Metric and use it with prometheus

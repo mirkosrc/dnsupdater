@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: dnsupdater
+
+dnsupdater:
+  websites:
+    - url: "http://localhost:8080/api/v5/domains/domain1.net/records/"
+      subdomains:
+        - "subdomain1"
+        - "subdomain11"
+        - "subdomain111"
+    - url: "http://localhost:8080/api/v5/domains/domain2.net/records/"
+      subdomains:
+        - "subdomain2"
+        - "subdomain22"
+        - "subdomain222"
+  api-key: test1232
+  update-cron: "*/3 * * * * *"
