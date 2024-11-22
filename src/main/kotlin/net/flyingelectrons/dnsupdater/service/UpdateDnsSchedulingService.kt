@@ -1,66 +1,59 @@
 package net.flyingelectrons.dnsupdater.service
 
 import mu.KotlinLogging
+import net.flyingelectrons.dnsupdater.configuration.DnsServiceProperties
 import net.flyingelectrons.dnsupdater.gateway.GandiClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 
+private val LOGGER = KotlinLogging.logger { }
+
 @Service
 class UpdateDnsSchedulingService @Autowired constructor(
+    dnsServiceProperties: DnsServiceProperties,
     private val externalIpRetrieverService: ExternalIpRetrieverService,
     private val gandiClient: GandiClient,
-    @Value(value = "\${subdomain.names}")
-    private var subdomains: List<String>,
-    @Value(value = "\${subdomain.names2}")
-    private var subdomains2: List<String>
 ) {
 
-    var ipMemoryList: List<IpMemory> = subdomains.map(::IpMemory)
-    var ipMemoryList2: List<IpMemory> = subdomains2.map(::IpMemory)
-    
+    var addressToIpMemoryMap: MutableMap<Address, IpMemory> = mutableMapOf()
 
-    @Scheduled(cron = "\${dns.update.cron}" )
-    fun updateDns() {
-        try {
-            LOGGER.info("running scheduler")
-            val externalIp: String = externalIpRetrieverService.getExternalIp()
-            LOGGER.info("get external ip: $externalIp")
-
-            for (ipMemory in ipMemoryList) {
-                if (externalIp != ipMemory.ip) {
-                    val ipWithfqdn: ResponseEntity<String> = gandiClient.doUpdateIpWithSubdomain(externalIp, ipMemory.subdomain)
-                    LOGGER.info("Updating ${ipMemory.subdomain}")
-                    if (ipWithfqdn.statusCode == HttpStatus.CREATED) {
-                        ipMemory.ip = externalIp
-                    } else {
-                        LOGGER.info("IP of fqdn ${ipMemory.subdomain} did not change")
-                    }
-                }
+    init {
+        dnsServiceProperties.websites.map { website ->
+            website.subdomains.map { subdomain ->
+                addressToIpMemoryMap[Address(website.url, subdomain)] = IpMemory()
             }
-
-            for (ipMemory in ipMemoryList2) {
-                if (externalIp != ipMemory.ip) {
-                    val ipWithfqdn: ResponseEntity<String> = gandiClient.doUpdateIpWithSubdomain2(externalIp, ipMemory.subdomain)
-                    LOGGER.info("Updating2 ${ipMemory.subdomain}")
-                    if (ipWithfqdn.statusCode == HttpStatus.CREATED) {
-                        ipMemory.ip = externalIp
-                    } else {
-                        LOGGER.info("IP of fqdn2 ${ipMemory.subdomain} did not change")
-                    }
-                }
-            }
-        } catch (ex: IllegalArgumentException) {
-            LOGGER.info("running scheduler failed with {}", ex.message)
         }
     }
 
-    companion object {
-        private val LOGGER = KotlinLogging.logger { }
+    @Scheduled(cron = "\${dnsupdater.update-cron}")
+    fun updateDns() {
+        addressToIpMemoryMap.entries.forEach { (address, ipMemory) ->
+            try {
+                LOGGER.info("running scheduler")
+                val externalIp: String = externalIpRetrieverService.getExternalIp()
+                LOGGER.info("get external ip: $externalIp")
+
+                if (externalIp != ipMemory.ip) {
+                    val ipWithfqdn: ResponseEntity<String> =
+                        gandiClient.doUpdateIpWithSubdomain(externalIp, address.subdomain, address.domain)
+                    LOGGER.info("Updating ${address.domain} ${address.subdomain}  ${ipMemory.ip}")
+                    if (ipWithfqdn.statusCode == HttpStatus.CREATED) {
+                        ipMemory.ip = externalIp
+                    } else {
+                        LOGGER.info("IP of fqdn ${address.subdomain} did not change")  //TODO: fix names
+                    }
+                }
+
+            } catch (ex: IllegalArgumentException) {
+                LOGGER.info("running scheduler failed with {}", ex.message)
+            }
+        }
+
     }
 }
 
-data class IpMemory(var subdomain: String, var ip:String = "noIpYet")
+data class IpMemory(var ip: String = "noIpYet")
+data class Address(val domain: String, val subdomain: String)

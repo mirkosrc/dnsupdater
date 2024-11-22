@@ -3,6 +3,7 @@ package net.flyingelectrons.dnsupdater.service
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.verify
+import net.flyingelectrons.dnsupdater.configuration.DnsServiceProperties
 import net.flyingelectrons.dnsupdater.gateway.GandiClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -25,25 +26,47 @@ class UpdateDnsSchedulingServiceTest {
     @MockkBean
     private lateinit var gandiClient: GandiClient
 
-
     @Test
     fun `New external IP should be saved if update call to dns provider was successful`() {
         every { externalIpRetrieverService.getExternalIp() } returns "1.1.1.1"
-        every { gandiClient.doUpdateIpWithSubdomain(any(), any()) } returns ResponseEntity<String>(HttpStatus.CREATED)
-        every { gandiClient.doUpdateIpWithSubdomain2(any(), any()) } returns ResponseEntity<String>(HttpStatus.CREATED)
+        every {
+            gandiClient.doUpdateIpWithSubdomain(
+                any(),
+                any(),
+                any()
+            )
+        } returns ResponseEntity<String>(HttpStatus.CREATED)
         updateDnsSchedulingService.updateDns()
 
-        assertThat(updateDnsSchedulingService.ipMemoryList[0]).isEqualTo(IpMemory("subdomain1", "1.1.1.1"))
+
+        assertThat(
+            updateDnsSchedulingService.addressToIpMemoryMap[Address(
+                "http://localhost:8080/api/v5/domains/domain1.net/records/",
+                "subdomain1"
+            )]
+        ).isEqualTo(IpMemory("1.1.1.1"))
+
+        assertThat(
+            updateDnsSchedulingService.addressToIpMemoryMap
+                [Address("http://localhost:8080/api/v5/domains/domain1.net/records/", "subdomain11")]
+        ).isEqualTo(IpMemory("1.1.1.1"))
+
+        assertThat(
+            updateDnsSchedulingService.addressToIpMemoryMap
+                [Address("http://localhost:8080/api/v5/domains/domain2.net/records/", "subdomain22")]
+        ).isEqualTo(IpMemory("1.1.1.1"))
     }
 
     @Test
     fun `New external IP should not be saved if update call to dns provider fails`() {
         every { externalIpRetrieverService.getExternalIp() } returns "1.1.1.1"
-        every { gandiClient.doUpdateIpWithSubdomain(any(), any()) } returns ResponseEntity<String>(HttpStatus.FORBIDDEN)
-        every { gandiClient.doUpdateIpWithSubdomain2(any(), any()) } returns ResponseEntity<String>(HttpStatus.FORBIDDEN)
+        every { gandiClient.doUpdateIpWithSubdomain(any(), any(), any()) } returns ResponseEntity<String>(HttpStatus.FORBIDDEN)
         updateDnsSchedulingService.updateDns()
 
-        assertThat(updateDnsSchedulingService.ipMemoryList[0]).isEqualTo(IpMemory("subdomain1", "noIpYet"))
+        assertThat(
+            updateDnsSchedulingService.addressToIpMemoryMap
+                [Address("http://localhost:8080/api/v5/domains/domain2.net/records/", "subdomain22")]
+        ).isEqualTo(IpMemory("noIpYet"))
     }
 
     @Test
@@ -51,8 +74,11 @@ class UpdateDnsSchedulingServiceTest {
         every { externalIpRetrieverService.getExternalIp() } throws IllegalArgumentException()
         updateDnsSchedulingService.updateDns()
 
-        assertThat(updateDnsSchedulingService.ipMemoryList[0]).isEqualTo(IpMemory("subdomain1", "noIpYet"))
-
-        verify(exactly = 0) { gandiClient.doUpdateIpWithSubdomain(any(), any()) }
+        assertThat(
+            updateDnsSchedulingService.addressToIpMemoryMap
+                [Address("http://localhost:8080/api/v5/domains/domain2.net/records/", "subdomain22")]
+        ).isEqualTo(IpMemory("noIpYet"))
+        
+        verify(exactly = 0) { gandiClient.doUpdateIpWithSubdomain(any(), any(), any()) }
     }
 }

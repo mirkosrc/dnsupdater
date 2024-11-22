@@ -1,5 +1,5 @@
 [versions]
-org-springframework-boot = "3.3.4"
+org-springframework-boot = "3.4.0"
 
 [libraries]
 com-ninja-squad-springmockk = "com.ninja-squad:springmockk:4.0.2"

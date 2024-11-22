@@ -26,8 +26,10 @@ dependencies {
     implementation(libs.spring.boot.starter)
     implementation(libs.spring.boot.starter.web)
     implementation(libs.microutils.kotlin.logging)
-    
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
     testImplementation(libs.spring.boot.starter.test)
+    testImplementation(kotlin("test"))
 }
 
 tasks.withType<KotlinCompile> {
@@ -54,6 +56,8 @@ testing {
                 implementation(libs.spring.boot.starter.web)
                 implementation(libs.io.mockk)
                 implementation(libs.com.ninja.squad.springmockk)
+                annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
             }
 
             targets {

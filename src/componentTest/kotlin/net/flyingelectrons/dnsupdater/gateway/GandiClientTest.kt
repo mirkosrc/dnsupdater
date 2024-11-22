@@ -11,6 +11,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.client.ExpectedCount
 import org.springframework.test.web.client.MockRestServiceServer
+import org.springframework.test.web.client.match.MockRestRequestMatchers.header
 import org.springframework.test.web.client.match.MockRestRequestMatchers.method
 import org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo
 import org.springframework.test.web.client.response.MockRestResponseCreators.withStatus
@@ -28,7 +29,7 @@ internal class GandiClientTest {
     private lateinit var restTemplate: RestTemplate
 
     private lateinit var mockRestServiceServer: MockRestServiceServer
-
+    
     @BeforeEach
     fun init() {
         mockRestServiceServer = MockRestServiceServer.createServer(restTemplate)
@@ -37,28 +38,15 @@ internal class GandiClientTest {
     @Test
     fun `gandi client should return 201 response code from server in case of successful ip update`() {
         mockRestServiceServer.expect(ExpectedCount.once(),
-            requestTo( URI("http://localhost:8080/api/v5/domains/domain1.net/records/fqdn/A")))
+            requestTo( URI("http://localhost:8080/api/v5/domains/domain1.net/records/subdomain/A")))
             .andExpect(method(HttpMethod.PUT))
+            .andExpect(header("Authorization", "Bearer test1232"))
             .andRespond(withStatus(HttpStatus.CREATED)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body("{\"keks\":\"dose\"}")
             );
         val ipAddress= "1.1.1.1"
-        val responseCode = gandiClient.doUpdateIpWithSubdomain(ipAddress, "fqdn")
-        assertThat(responseCode.statusCode.value()).isEqualTo(201)
-    }
-
-    @Test
-    fun `gandi client for second domain should return 201 response code from server in case of successful ip update`() {
-        mockRestServiceServer.expect(ExpectedCount.once(),
-            requestTo( URI("http://localhost:8080/api/v5/domains/domain2.net/records/fqdn/A")))
-            .andExpect(method(HttpMethod.PUT))
-            .andRespond(withStatus(HttpStatus.CREATED)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body("{\"keks\":\"dose\"}")
-            )
-        val ipAddress= "1.1.1.1"
-        val responseCode = gandiClient.doUpdateIpWithSubdomain2(ipAddress, "fqdn")
+        val responseCode = gandiClient.doUpdateIpWithSubdomain(ipAddress, "subdomain", "http://localhost:8080/api/v5/domains/domain1.net/records/")
         assertThat(responseCode.statusCode.value()).isEqualTo(201)
     }
 
@@ -72,7 +60,7 @@ internal class GandiClientTest {
                 .body("{\"keks\":\"fehler\"}")
             )
         val ipAddress= "1.1.1.1"
-        val responseCode = gandiClient.doUpdateIpWithSubdomain(ipAddress, "subdomain")
+        val responseCode = gandiClient.doUpdateIpWithSubdomain(ipAddress, "subdomain", "http://localhost:8080/api/v5/domains/domain1.net/records/")
         assertThat(responseCode.statusCode.value()).isEqualTo(403)
     }
 }

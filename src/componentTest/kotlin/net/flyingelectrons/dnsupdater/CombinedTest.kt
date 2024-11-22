@@ -28,12 +28,6 @@ class CombinedTest {
     @Autowired
     private lateinit var updateDnsSchedulingService: UpdateDnsSchedulingService
 
-    @Autowired
-    private lateinit var externalIpRetrieverService: ExternalIpRetrieverService
-
-    @Autowired
-    private lateinit var gandiClient: GandiClient
-
     @MockkBean
     private lateinit var fritzBoxSoapClient: FritzBoxSoapClient
 
@@ -47,19 +41,14 @@ class CombinedTest {
         mockRestServiceServer = MockRestServiceServer.createServer(restTemplate)
     }
 
-
     @Test
     fun `scheduler runs and gandi client updates the ip`() {
-        val domainsToSubdomainsList = mapOf(
-            "domain1.net" to listOf("subdomain1", "subdomain11", "subdomain111"),
-            "domain2.net" to listOf("subdomain2", "subdomain22", "subdomain222"),
-        )
-
-        domainsToSubdomainsList.flatMap { (domain, subdomains) ->
-            subdomains.map { subdomain ->
-                mockRestServiceServer.asserRequestTo(domain, subdomain)
-            }
-        }
+        mockRestServiceServer.assertRequestTo("domain1.net", "subdomain1")
+        mockRestServiceServer.assertRequestTo("domain1.net", "subdomain11")
+        mockRestServiceServer.assertRequestTo("domain1.net", "subdomain111")
+        mockRestServiceServer.assertRequestTo("domain2.net", "subdomain2")
+        mockRestServiceServer.assertRequestTo("domain2.net", "subdomain22")
+        mockRestServiceServer.assertRequestTo("domain2.net", "subdomain222")
 
         every { fritzBoxSoapClient.getExternalIPAddress() } returns "1.2.3.4"
 
@@ -68,8 +57,7 @@ class CombinedTest {
         mockRestServiceServer.verify()
     }
 
-
-    private fun MockRestServiceServer.asserRequestTo(domain: String, subdomain: String) {
+    private fun MockRestServiceServer.assertRequestTo(domain: String, subdomain: String) {
         this.expect(
             requestTo(URI("http://localhost:8080/api/v5/domains/$domain/records/$subdomain/A"))
         )
@@ -80,5 +68,4 @@ class CombinedTest {
                     .body("{\"keks\":\"dose\"}")
             )
     }
-
 }
